@@ -13,6 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('/login', 'Api\LoginController@login');
+Route::post('/register', 'Api\LoginController@register');
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    // List articles
+	//Route::apiResource('accounts', 'Api\AccountController');
+	//Route::apiResource('transactions', 'Api\TransactionController');
 });
