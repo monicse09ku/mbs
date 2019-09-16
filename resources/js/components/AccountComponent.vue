@@ -36,35 +36,27 @@
                 let method = !this.account_id ? 'post' : 'put'
                 let url = !this.account_id ? `api/accounts` : `api/accounts/${this.account_id}`
 
-                if(this.account_id){
-                    axios.put(url, formData).then(res => {
-                        alert(res.data.message)
+                axios({
+                  method: method,
+                  url: url,
+                  data: formData,
+                  validateStatus: (status) => {
+                    return true; // I'm always returning true, you may want to do it depending on the status received
+                  },
+                }).catch(error => {
+                    alert('Something Went Wrong')
+                }).then(response => {
+                    if(response.status === 200){
+                        alert('Success')
                         this.fetchAccounts()
 
                         this.showAccountForm = false
                         this.account.account_name = ''
                         this.account.account_desc = ''
-                    }).catch(error => {
-                        this.loading = false  
-                        if(!('errors' in error)) {
-                            alert(error.message)                        
-                        }
-                    });
-                }else{
-                    axios.post(url, formData).then(res => {
-                        alert(res.data.message)
-                        this.fetchAccounts()
-                        
-                        this.showAccountForm = false
-                        this.account.account_name = ''
-                        this.account.account_desc = ''
-                    }).catch(error => {
-                        this.loading = false  
-                        if(!('errors' in error)) {
-                            alert(error.message)                        
-                        }
-                    });
-                }
+                    }else{
+                        alert(response.data.error.message)
+                    }
+                });  
                 
             },
 

@@ -64,6 +64,12 @@ class TransactionController extends ApiBaseController
                 Account::where('id', $request->account_id)->update([
                     'balance' => $revised_balance
                 ]);
+
+                $transaction_to_account = Account::where('account_id', $request->transaction_to)->first();
+
+                $transaction_to_account->balance = $transaction_to_account->balance + $request->amount;
+
+                $transaction_to_account->save();
             });
 
             return $this->respondSuccess('SUCCESS');
