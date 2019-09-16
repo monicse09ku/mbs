@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use App\Models\Account;
 
 class TransactionController extends Controller
 {
@@ -24,7 +25,8 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        return view('transaction.index');
+        $accounts = Account::all();
+        return view('transaction.index', compact('accounts'));
     }
 
     /**
@@ -35,20 +37,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required'
-        ]);
-
-        try {
-            $data = $request->only('name');
-            //$data['sequence'] = FacilityType::count() + 1;
-
-            Transaction::create($data);
-
-            return respondSuccess('SUCCESS');
-        } catch (\Exception $e) {
-            return respondError('FAIL');
-        }
+        
     }
 
     /**
@@ -59,10 +48,7 @@ class TransactionController extends Controller
      */
     public function show(Request $request, $slug)
     {
-        if ($request->expectsJson()) {
-            return Transaction::paginate(request('limit') ?? 10);
-        }
-        return back();
+        
     }
 
     /**
@@ -74,17 +60,7 @@ class TransactionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required'
-        ]);
-
-        try {
-            Transaction::findOrFail($id)->update($request->only('name'));
-
-            return respondSuccess('UPDATE_SUCCESS');
-        } catch (\Exception $e) {
-            return respondError('UPDATE_FAIL');
-        }
+        
     }
 
     /**
@@ -95,12 +71,6 @@ class TransactionController extends Controller
      */
     public function destroy($id)
     {
-        try {
-            if (Transaction::findOrFail($id)->delete()) {
-                return respondSuccess('DELETE_SUCCESS');
-            }
-        } catch (\Exception $e) {
-            return respondError('DELETE_FAIL');
-        }
+        
     }
 }

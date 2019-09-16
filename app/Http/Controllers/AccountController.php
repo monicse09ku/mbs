@@ -35,20 +35,7 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required'
-        ]);
-
-        try {
-            $data = $request->only('name');
-            //$data['sequence'] = FacilityType::count() + 1;
-
-            Account::create($data);
-
-            return respondSuccess('SUCCESS');
-        } catch (\Exception $e) {
-            return respondError('FAIL');
-        }
+        
     }
 
     /**
@@ -59,10 +46,7 @@ class AccountController extends Controller
      */
     public function show(Request $request, $slug)
     {
-        if ($request->expectsJson()) {
-            return Account::paginate(request('limit') ?? 10);
-        }
-        return back();
+        
     }
 
     /**
@@ -74,17 +58,7 @@ class AccountController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required'
-        ]);
-
-        try {
-            Account::findOrFail($id)->update($request->only('name'));
-
-            return respondSuccess('UPDATE_SUCCESS');
-        } catch (\Exception $e) {
-            return respondError('UPDATE_FAIL');
-        }
+        
     }
 
     /**
@@ -95,12 +69,6 @@ class AccountController extends Controller
      */
     public function destroy($id)
     {
-        try {
-            if (Account::findOrFail($id)->delete()) {
-                return respondSuccess('DELETE_SUCCESS');
-            }
-        } catch (\Exception $e) {
-            return respondError('DELETE_FAIL');
-        }
+        
     }
 }

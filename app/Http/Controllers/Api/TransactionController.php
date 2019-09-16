@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\TransactionResource;
+use App\Models\Transaction;
+use App\Models\Account;
+use Auth, DB;
 
-class TransactionController extends Controller
+class TransactionController extends ApiBaseController
 {
     /**
      * Display a listing of the resource.
@@ -14,17 +18,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return TransactionResource::collection(Transaction::paginate(request('limit') ?? 10));
     }
 
     /**
@@ -35,7 +29,47 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = \Validator::make($request->all(), [
+            'account_id' => 'required',
+            'transaction_to' => 'required',
+            'amount' => 'required',
+            'remarks' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondValidationError('Parameters failed validation');
+        }
+
+        $to_account = Account::where('account_id', $request->transaction_to)->first();
+        if(empty($to_account)){
+            return $this->respondInternalError('Invalid Account');
+        }
+
+        $revised_balance = $this->insufficientBalance($request->account_id, $request->amount);
+       
+        if($revised_balance < 0){
+            return $this->respondValidationError('Insufficient Balance');
+        }
+
+        try{
+            DB::transaction(function () use ($request, $revised_balance){
+                Transaction::create([
+                        'account_id' => $request->account_id,
+                        'transaction_to' => $request->transaction_to,
+                        'transaction_type' => 'transfer',
+                        'amount' => $request->amount,
+                        'remarks' => $request->remarks
+                    ]);
+
+                Account::where('id', $request->account_id)->update([
+                    'balance' => $revised_balance
+                ]);
+            });
+
+            return $this->respondSuccess('SUCCESS');
+        }catch(Exception $e){
+            return $this->respondInternalError($e->getMessage());
+        }
     }
 
     /**
@@ -81,5 +115,12 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function insufficientBalance($account_id, $balance)
+    {
+        $account = Account::where('id', $account_id)->first();
+        
+        return ($account->balance - $balance);
     }
 }

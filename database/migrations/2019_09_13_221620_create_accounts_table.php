@@ -17,6 +17,8 @@ class CreateAccountsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id');
             $table->string('account_id');
+            $table->string('account_name');
+            $table->string('account_desc');            
             $table->integer('balance');
             $table->timestamps();
         });
