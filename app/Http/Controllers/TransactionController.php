@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Account;
+use Auth;
 
 class TransactionController extends Controller
 {
@@ -25,7 +26,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $accounts = Account::all();
+        $accounts = Account::where('user_id', Auth::user()->id)->all();
         return view('transaction.index', compact('accounts'));
     }
 
