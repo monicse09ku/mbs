@@ -26,7 +26,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $accounts = Account::where('user_id', Auth::user()->id)->all();
+        $accounts = Account::where('user_id', Auth::user()->id)->get();
         return view('transaction.index', compact('accounts'));
     }
 
