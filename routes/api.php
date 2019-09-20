@@ -15,11 +15,7 @@ use Illuminate\Http\Request;
 
 Route::post('/login', 'Api\LoginController@login');
 Route::post('/register', 'Api\LoginController@register');
-Route::apiResource('accounts', 'Api\AccountController');
-Route::apiResource('transactions', 'Api\TransactionController');
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    // List articles
-	//Route::apiResource('accounts', 'Api\AccountController');
-	//Route::apiResource('transactions', 'Api\TransactionController');
-});
+Route::apiResource('accounts', 'Api\AccountController')->middleware('auth:api');
+Route::apiResource('transactions', 'Api\TransactionController')->middleware('auth:api');
+Route::get('user', 'Api\TransactionController@user')->middleware('auth:api');
+Route::post('user', 'Api\TransactionController@userUpdate')->middleware('auth:api');

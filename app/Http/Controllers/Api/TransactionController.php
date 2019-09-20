@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\TransactionResource;
 use App\Models\Transaction;
 use App\Models\Account;
+use App\User;
 use Auth, DB;
+use Illuminate\Support\Facades\Hash;
 
 class TransactionController extends ApiBaseController
 {
@@ -18,7 +20,17 @@ class TransactionController extends ApiBaseController
      */
     public function index()
     {
-        return TransactionResource::collection(Transaction::paginate(request('limit') ?? 10));
+        $accounts = Account::where('user_id', auth()->user()->id)->pluck('account_id')->toArray();
+
+        $transactions = Transaction::whereIn('account_id', $accounts)->orWhereIn('transaction_to', $accounts)->paginate(request('limit') ?? 10);
+
+        foreach ($transactions as $transaction) {
+            if(in_array($transaction->transaction_to, $accounts)){
+                $transaction->transaction_type = 'deposit';
+            }
+        }
+            
+        return TransactionResource::collection($transactions);
     }
 
     /**
@@ -45,6 +57,10 @@ class TransactionController extends ApiBaseController
             return $this->respondInternalError('Invalid Account');
         }
 
+        if($request->account_id == $request->transaction_to){
+            return $this->respondInternalError('You can not transfer to same account');
+        }
+
         $revised_balance = $this->insufficientBalance($request->account_id, $request->amount);
        
         if($revised_balance < 0){
@@ -61,7 +77,7 @@ class TransactionController extends ApiBaseController
                         'remarks' => $request->remarks
                     ]);
 
-                Account::where('id', $request->account_id)->update([
+                Account::where('account_id', $request->account_id)->update([
                     'balance' => $revised_balance
                 ]);
 
@@ -125,8 +141,47 @@ class TransactionController extends ApiBaseController
 
     public function insufficientBalance($account_id, $balance)
     {
-        $account = Account::where('id', $account_id)->first();
+        $account = Account::where('account_id', $account_id)->first();
         
         return ($account->balance - $balance);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function user()
+    {
+        return Auth::user();
+    }
+
+    public function userUpdate(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondValidationError('Parameters failed validation');
+        }
+
+        $user['name'] = $request->name;
+        $user['email'] = $request->email;
+        if(!empty($request->password)){
+            $user['password'] =  Hash::make($request->password);
+        }
+
+        try {
+            DB::table('users')
+            ->where('id', 1)
+            ->update($user);
+
+            return $this->respondSuccess('SUCCESS');
+
+        } catch (\Exception $e) {
+            return $this->respondInternalError($e->getMessage());
+        }
     }
 }

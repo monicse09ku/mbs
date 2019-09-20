@@ -19,15 +19,6 @@ Auth::routes();
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth.basic');
-/*
-Route::get('accounts', 'Api\AccountController@index')->middleware('auth.basic');
-Route::get('transactions', 'Api\TransactionController@index')->middleware('auth.basic');*/
-
-/*Route::apiResource('accounts', 'Api\AccountController')->middleware('auth.basic');
-Route::apiResource('transactions', 'Api\TransactionController')->middleware('auth.basic');
-*/
-
-Route::apiResources([
-            'accounts' => 'AccountController',
-            'transactions' => 'TransactionController',
-        ]);
+Route::get('/accounts', 'AccountController@index');
+Route::get('/transactions', 'TransactionController@index');
+Route::get('/profile', 'UserController@index');

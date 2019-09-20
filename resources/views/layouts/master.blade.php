@@ -53,14 +53,12 @@
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    
 
     <div id="app">
         
-                    @yield('content')
-
+      @yield('content')
             
-        </div>
+    </div>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->

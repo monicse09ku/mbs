@@ -20,10 +20,9 @@
         },
         methods: {
             fetchAccounts(){
-                fetch('api/accounts')
-                .then(res => res.json())
+                axios.get('api/accounts')
                 .then( res => {
-                    this.accounts = res.data
+                    this.accounts = res.data.data
                 })
             },
             saveAccount(){

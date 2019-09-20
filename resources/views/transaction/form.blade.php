@@ -15,7 +15,7 @@
             <select v-model="transaction.account_id" class="form-control" >
               <option disabled value="">Please select one</option>
               @foreach($accounts as $account)
-              <option value="{{ $account->id }}">{{ $account->account_name }}</option>
+              <option value="{{ $account->account_id }}">{{ $account->account_name }}</option>
               @endforeach
             </select>
           </div>

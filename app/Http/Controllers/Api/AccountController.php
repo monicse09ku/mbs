@@ -15,9 +15,9 @@ class AccountController extends ApiBaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return AccountResource::collection(Account::paginate(request('limit') ?? 10));
+        return AccountResource::collection(Account::where('user_id', auth()->user()->id)->paginate(request('limit') ?? 10));
     }
 
     /**

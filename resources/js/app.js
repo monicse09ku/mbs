@@ -21,6 +21,7 @@ window.Vue = require('vue');
 
 Vue.component('account-component', require('./components/AccountComponent.vue').default);
 Vue.component('transaction-component', require('./components/TransactionComponent.vue').default);
+Vue.component('user-component', require('./components/UserComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -22,10 +22,9 @@
         },
         methods: {
             fetchTransactions(){
-                fetch('api/transactions')
-                .then(res => res.json())
+                axios.get('api/transactions')
                 .then( res => {
-                    this.transactions = res.data
+                    this.transactions = res.data.data
                 })
             },
             saveTransaction(){
@@ -35,8 +34,7 @@
                     amount : this.transaction.amount,
                     remarks : this.transaction.remarks,
                 }
-
-                let method = !this.account_id ? 'post' : 'put'
+                
                 let url = `api/transactions`
 
                 axios({

@@ -22,4 +22,12 @@ class Transaction extends Model
     {
         return $this->belongsTo('User');
     }
+
+    /**
+     * Get the post that owns the comment.
+     */
+    public function account()
+    {
+        return $this->belongsTo('Models\Account', 'account_id');
+    }
 }

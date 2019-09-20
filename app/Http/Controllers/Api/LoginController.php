@@ -36,6 +36,7 @@ class LoginController extends ApiBaseController
 
             if (Auth::attempt($credentials)) {
                 $user = auth()->user();
+                //Session::set('user', $user);
                 $accessToken = $this->createAccessToken($user);
 
                 return (new UserResource($user))->additional([
